@@ -1,0 +1,20 @@
+ steps:
+    - name: Print Base64 Encoded Secret
+      run: |
+        # Encode the secret
+        echo "$MY_SECRET" | base64 > encoded_secret.txt
+        # Print encoded secret to verify
+        echo "Base64 encoded secret:"
+        cat encoded_secret.txt
+      env:
+        MY_SECRET: ${{ secrets.MY_SECRET }}
+
+    - name: Decode Base64 and Write to File
+      run: |
+        # Decode the Base64 encoded secret and write to a file
+        base64 --decode encoded_secret.txt > decoded_secret.txt
+        # Print the decoded secret to verify
+        echo "Decoded secret value:"
+        cat decoded_secret.txt
+      env:
+        MY_SECRET: ${{ secrets.MY_SECRET }}
