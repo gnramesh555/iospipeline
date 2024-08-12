@@ -1,18 +1,15 @@
-- name: Clean Base64 Data
+ - name: Decode Cleaned Base64 Data
       run: |
-        # Remove any newlines from the Base64 data
-        tr -d '\n' < encoded_secret.txt > cleaned_encoded_secret.txt
-        # Print the cleaned Base64 data
-        echo "Cleaned Base64 data:"
-        cat cleaned_encoded_secret.txt
-
-    - name: Decode Cleaned Base64 Data
-      run: |
-        # Print the cleaned Base64 data again for verification
+        # Print the cleaned Base64 data for verification
         echo "Cleaned Base64 data for decoding:"
         cat cleaned_encoded_secret.txt
         # Decode the Base64 data
         base64 --decode cleaned_encoded_secret.txt > decoded_secret.txt
+        # Check if the decoding was successful
+        if [ $? -ne 0 ]; then
+          echo "Base64 decoding failed."
+          exit 1
+        fi
         # Print the decoded file content
         echo "Decoded file content:"
         cat decoded_secret.txt
