@@ -1,0 +1,65 @@
+- name: Set environment-specific secrets
+  id: vars
+  run: |
+    case "${{ github.event.inputs.environment }}" in
+      "dev")
+        if [ "${{ github.event.inputs.build_type }}" = "unmanaged" ]; then
+          echo "::set-output name=BUILD_CERTIFICATE_BASE64::${{ secrets.DEV_UNMANAGED_BUILD_CERTIFICATE_BASE64 }}"
+          echo "::set-output name=P12_PASSWORD::${{ secrets.DEV_UNMANAGED_P12_PASSWORD }}"
+          echo "::set-output name=BUILD_PROVISION_PROFILE_BASE64::${{ secrets.DEV_UNMANAGED_BUILD_PROVISION_PROFILE_BASE64 }}"
+          echo "::set-output name=KEYCHAIN_PASSWORD::${{ secrets.DEV_UNMANAGED_KEYCHAIN_PASSWORD }}"
+          echo "::set-output name=EXPORT_OPTIONS_PLIST_BASE64::${{ secrets.DEV_UNMANAGED_EXPORT_OPTIONS_PLIST_BASE64 }}"
+        else
+          echo "::set-output name=BUILD_CERTIFICATE_BASE64::${{ secrets.DEV_MANAGED_BUILD_CERTIFICATE_BASE64 }}"
+          echo "::set-output name=P12_PASSWORD::${{ secrets.DEV_MANAGED_P12_PASSWORD }}"
+          echo "::set-output name=BUILD_PROVISION_PROFILE_BASE64::${{ secrets.DEV_MANAGED_BUILD_PROVISION_PROFILE_BASE64 }}"
+          echo "::set-output name=KEYCHAIN_PASSWORD::${{ secrets.DEV_MANAGED_KEYCHAIN_PASSWORD }}"
+          echo "::set-output name=EXPORT_OPTIONS_PLIST_BASE64::${{ secrets.DEV_MANAGED_EXPORT_OPTIONS_PLIST_BASE64 }}"
+        fi
+        ;;
+      "qa")
+        if [ "${{ github.event.inputs.build_type }}" = "unmanaged" ]; then
+          echo "::set-output name=BUILD_CERTIFICATE_BASE64::${{ secrets.QA_UNMANAGED_BUILD_CERTIFICATE_BASE64 }}"
+          echo "::set-output name=P12_PASSWORD::${{ secrets.QA_UNMANAGED_P12_PASSWORD }}"
+          echo "::set-output name=BUILD_PROVISION_PROFILE_BASE64::${{ secrets.QA_UNMANAGED_BUILD_PROVISION_PROFILE_BASE64 }}"
+          echo "::set-output name=KEYCHAIN_PASSWORD::${{ secrets.QA_UNMANAGED_KEYCHAIN_PASSWORD }}"
+          echo "::set-output name=EXPORT_OPTIONS_PLIST_BASE64::${{ secrets.QA_UNMANAGED_EXPORT_OPTIONS_PLIST_BASE64 }}"
+        else
+          echo "::set-output name=BUILD_CERTIFICATE_BASE64::${{ secrets.QA_MANAGED_BUILD_CERTIFICATE_BASE64 }}"
+          echo "::set-output name=P12_PASSWORD::${{ secrets.QA_MANAGED_P12_PASSWORD }}"
+          echo "::set-output name=BUILD_PROVISION_PROFILE_BASE64::${{ secrets.QA_MANAGED_BUILD_PROVISION_PROFILE_BASE64 }}"
+          echo "::set-output name=KEYCHAIN_PASSWORD::${{ secrets.QA_MANAGED_KEYCHAIN_PASSWORD }}"
+          echo "::set-output name=EXPORT_OPTIONS_PLIST_BASE64::${{ secrets.QA_MANAGED_EXPORT_OPTIONS_PLIST_BASE64 }}"
+        fi
+        ;;
+      "uat")
+        if [ "${{ github.event.inputs.build_type }}" = "unmanaged" ]; then
+          echo "::set-output name=BUILD_CERTIFICATE_BASE64::${{ secrets.UAT_UNMANAGED_BUILD_CERTIFICATE_BASE64 }}"
+          echo "::set-output name=P12_PASSWORD::${{ secrets.UAT_UNMANAGED_P12_PASSWORD }}"
+          echo "::set-output name=BUILD_PROVISION_PROFILE_BASE64::${{ secrets.UAT_UNMANAGED_BUILD_PROVISION_PROFILE_BASE64 }}"
+          echo "::set-output name=KEYCHAIN_PASSWORD::${{ secrets.UAT_UNMANAGED_KEYCHAIN_PASSWORD }}"
+          echo "::set-output name=EXPORT_OPTIONS_PLIST_BASE64::${{ secrets.UAT_UNMANAGED_EXPORT_OPTIONS_PLIST_BASE64 }}"
+        else
+          echo "::set-output name=BUILD_CERTIFICATE_BASE64::${{ secrets.UAT_MANAGED_BUILD_CERTIFICATE_BASE64 }}"
+          echo "::set-output name=P12_PASSWORD::${{ secrets.UAT_MANAGED_P12_PASSWORD }}"
+          echo "::set-output name=BUILD_PROVISION_PROFILE_BASE64::${{ secrets.UAT_MANAGED_BUILD_PROVISION_PROFILE_BASE64 }}"
+          echo "::set-output name=KEYCHAIN_PASSWORD::${{ secrets.UAT_MANAGED_KEYCHAIN_PASSWORD }}"
+          echo "::set-output name=EXPORT_OPTIONS_PLIST_BASE64::${{ secrets.UAT_MANAGED_EXPORT_OPTIONS_PLIST_BASE64 }}"
+        fi
+        ;;
+      "prod")
+        if [ "${{ github.event.inputs.build_type }}" = "unmanaged" ]; then
+          echo "::set-output name=BUILD_CERTIFICATE_BASE64::${{ secrets.PROD_UNMANAGED_BUILD_CERTIFICATE_BASE64 }}"
+          echo "::set-output name=P12_PASSWORD::${{ secrets.PROD_UNMANAGED_P12_PASSWORD }}"
+          echo "::set-output name=BUILD_PROVISION_PROFILE_BASE64::${{ secrets.PROD_UNMANAGED_BUILD_PROVISION_PROFILE_BASE64 }}"
+          echo "::set-output name=KEYCHAIN_PASSWORD::${{ secrets.PROD_UNMANAGED_KEYCHAIN_PASSWORD }}"
+          echo "::set-output name=EXPORT_OPTIONS_PLIST_BASE64::${{ secrets.PROD_UNMANAGED_EXPORT_OPTIONS_PLIST_BASE64 }}"
+        else
+          echo "::set-output name=BUILD_CERTIFICATE_BASE64::${{ secrets.PROD_MANAGED_BUILD_CERTIFICATE_BASE64 }}"
+          echo "::set-output name=P12_PASSWORD::${{ secrets.PROD_MANAGED_P12_PASSWORD }}"
+          echo "::set-output name=BUILD_PROVISION_PROFILE_BASE64::${{ secrets.PROD_MANAGED_BUILD_PROVISION_PROFILE_BASE64 }}"
+          echo "::set-output name=KEYCHAIN_PASSWORD::${{ secrets.PROD_MANAGED_KEYCHAIN_PASSWORD }}"
+          echo "::set-output name=EXPORT_OPTIONS_PLIST_BASE64::${{ secrets.PROD_MANAGED_EXPORT_OPTIONS_PLIST_BASE64 }}"
+        fi
+        ;;
+    esac
