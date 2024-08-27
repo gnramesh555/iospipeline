@@ -1,0 +1,37 @@
+import json
+import requests
+
+def lambda_handler(event, context):
+    # API endpoint
+    url = "https://api.example.com/data"
+    
+    # Bearer token for authentication
+    token = "your_token_here"
+    
+    # Request body
+    data = {
+        "grant_type": "client_credentials"
+    }
+    
+    # Set up headers with the authorization token
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+    
+    # Make the POST request
+    response = requests.post(url, headers=headers, data=data)
+    
+    # Check the response status
+    if response.status_code == 200:
+        return {
+            "statusCode": 200,
+            "body": json.dumps(response.json())
+        }
+    else:
+        return {
+            "statusCode": response.status_code,
+            "body": json.dumps({
+                "error": response.text
+            })
+        }
