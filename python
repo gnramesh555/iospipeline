@@ -1,28 +1,43 @@
 import json
-import requests
+import urllib.parse
+import urllib.request
 
 def lambda_handler(event, context):
+    # API endpoint
     url = "https://api.example.com/data"
+    
+    # Bearer token for authentication
     token = "your_token_here"
     
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/x-www-form-urlencoded"
-    }
-    
+    # Request body
     data = {
         "grant_type": "client_credentials"
     }
     
-    response = requests.post(url, headers=headers, data=data)
+    # Encode the data as application/x-www-form-urlencoded
+    encoded_data = urllib.parse.urlencode(data).encode('utf-8')
     
-    if response.status_code == 200:
+    # Set up the request with headers
+    req = urllib.request.Request(url, data=encoded_data)
+    req.add_header("Authorization", f"Bearer {token}")
+    req.add_header("Content-Type", "application/x-www-form-urlencoded")
+
+    try:
+        # Make the POST request
+        with urllib.request.urlopen(req) as response:
+            response_data = response.read()
+            return {
+                "statusCode": 200,
+                "body": json.dumps(json.loads(response_data))
+            }
+    except urllib.error.HTTPError as e:
+        # Handle errors
         return {
-            "statusCode": 200,
-            "body": json.dumps(response.json())
+            "statusCode": e.code,
+            "body": json.dumps({"error": e.read().decode()})
         }
-    else:
+    except Exception as e:
         return {
-            "statusCode": response.status_code,
-            "body": json.dumps({"error": response.text})
+            "statusCode": 500,
+            "body": json.dumps({"error": str(e)})
         }
