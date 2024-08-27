@@ -1,0 +1,5 @@
+wget --method=POST \
+     --header="Authorization: Basic dbagdjsbdygdhasvz" \
+     --header="Content-Type: application/json" \
+     --body-data='{"key1": "value1", "key2": "value2"}' \
+     https://api.example.com/data
