@@ -1,0 +1,16 @@
+FACILITY NAME: North Campus Training Center
+LOCATION: 123 Innovation Drive, Seattle
+TOTAL SIZE: 60,000 square feet
+MANAGER: Sarah Jenkins
+
+GYM INFORMATION:
+The gym is located on the second floor. It contains 20 treadmills and a full weight set. 
+Members must scan their ID badge to enter.
+
+CINEMA INFORMATION:
+The cinema is in the basement, Room B1. It seats 50 people. 
+Movies are shown every Friday at 7:00 PM.
+
+OTHER RULES:
+No smoking is allowed anywhere on the premises. 
+Pets are only allowed in the outdoor courtyard area.
