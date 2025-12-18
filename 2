@@ -1,0 +1,88 @@
+import com.azure.ai.openai.OpenAIClient;
+import com.azure.ai.openai.OpenAIClientBuilder;
+import com.azure.ai.openai.models.*;
+import com.azure.core.credential.AzureKeyCredential;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * Handles grounding AI responses in both System Messages and Azure AI Search data.
+ */
+public class OpenAIChatHandler {
+
+    // --- Configuration ---
+    private static final String OPENAI_ENDPOINT = "https://your-resource.openai.azure.com/";
+    private static final String OPENAI_KEY = "YOUR_OPENAI_API_KEY";
+    private static final String DEPLOYMENT_NAME = "gpt-4o"; 
+
+    private static final String SEARCH_ENDPOINT = "https://your-search-service.search.windows.net";
+    private static final String SEARCH_KEY = "YOUR_SEARCH_ADMIN_KEY";
+    private static final String SEARCH_INDEX = "your-index-name";
+
+    public static void main(String[] args) {
+        OpenAIChatHandler handler = new OpenAIChatHandler();
+        
+        // This will be answered from the System Message
+        System.out.println("User: Where is the gym located?");
+        System.out.println("AI: " + handler.askQuestion("Where is the gym located?"));
+
+        // This will be answered by searching your Blob Storage via AI Search
+        System.out.println("\nUser: Is there a Sauna in the Gym?");
+        System.out.println("AI: " + handler.askQuestion("Is there a Sauna in the Gym?"));
+    }
+
+    public String askQuestion(String userQuestion) {
+        try {
+            OpenAIClient client = new OpenAIClientBuilder()
+                .endpoint(OPENAI_ENDPOINT)
+                .credential(new AzureKeyCredential(OPENAI_KEY))
+                .buildClient();
+
+            // 1. Configure the "On Your Data" Search Extension
+            AzureSearchChatExtensionParameters searchParams = new AzureSearchChatExtensionParameters(
+                SEARCH_ENDPOINT, 
+                SEARCH_INDEX
+            )
+            .setAuthentication(new OnYourDataApiKeyAuthenticationOptions(SEARCH_KEY))
+            .setInScope(true)              // Only use provided data and index
+            .setStrictness(3)             // Balance between precision and recall
+            .setQueryType(AzureSearchQueryType.SIMPLE);
+
+            AzureSearchChatExtensionConfiguration searchConfig = 
+                new AzureSearchChatExtensionConfiguration(searchParams);
+
+            // 2. Build the Message History (Including System, User, and Assistant roles)
+            List<ChatRequestMessage> messages = new ArrayList<>();
+            
+            // System message acts as the primary "fact sheet"
+            messages.add(new ChatRequestSystemMessage(
+                "You are a helpful assistant. Gym is located on the second floor of the west wing and pets are allowed. " +
+                "For other facility questions, use the search tool."));
+            
+            messages.add(new ChatRequestUserMessage("Where is the gym located and are pets allowed?"));
+            messages.add(new ChatRequestAssistantMessage("The gym is located on the second floor of the west wing, and pets are allowed."));
+            messages.add(new ChatRequestUserMessage(userQuestion));
+
+            // 3. Set Options and Attach Data Source
+            ChatCompletionsOptions options = new ChatCompletionsOptions(messages);
+            options.setTemperature(0.0);
+            options.setMaxTokens(800);
+            
+            // This triggers the automatic search if the answer isn't in history
+            options.setDataSources(Arrays.asList(new ChatExtensionConfiguration(
+                ChatExtensionType.AZURE_SEARCH, 
+                searchConfig
+            )));
+
+            // 4. Execution
+            ChatCompletions completions = client.getChatCompletions(DEPLOYMENT_NAME, options);
+
+            return completions.getChoices().get(0).getMessage().getContent();
+
+        } catch (Exception e) {
+            return "Error processing request: " + e.getMessage();
+        }
+    }
+}
