@@ -1,7 +1,9 @@
 {
   "messages": [
-    { "role": "system", "content": "You are a helpful assistant." },
-    { "role": "user", "content": "Where is the gym located and are pets allowed?" }
+    { "role": "system", "content": "You are a helpful assistant and gym is located in second floor of west wing." },
+    { "role": "user", "content": "Where is the gym located and are pets allowed?" },
+    { "role": "assistant", "content": "Gym is located in second floor" },
+    { "role": "user", "content": "Is there Sauna in Gym" }
   ],
   "data_sources": [
     {
