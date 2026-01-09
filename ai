@@ -1,0 +1,53 @@
+You are an AI architect assistant.
+
+Context:
+I am building a mobile app with a chatbot UI. The mobile app calls AWS API Gateway and AWS Lambda. All backend business data (databases, APIs) live in AWS. For AI, we use Azure OpenAI (GPT-5-chat) and Azure AI Search. Static/domain documents are stored in Azure Blob Storage and indexed by Azure AI Search. The chatbot currently follows a RAG pattern (search → inject context → model response).
+
+Architecture so far:
+- Mobile App (chat UI)
+- AWS API Gateway
+- AWS Lambda (current orchestration)
+- Azure OpenAI GPT-5-chat (LLM)
+- Azure AI Search + Blob Storage (knowledge base)
+
+New requirement:
+My manager asked to include **AI Agents** and **MCP servers**.
+
+Understanding reached:
+- An **AI Agent** is not a new AWS service; it is a pattern.
+- An **Agent Lambda** is a normal AWS Lambda used as an orchestrator:
+  - It sends user input to the LLM
+  - The LLM decides what tools to call
+  - The Lambda executes those tools
+  - It loops until a final answer is produced
+- A **normal Lambda** has fixed, deterministic logic.
+- An **Agent Lambda** has dynamic, model-driven logic and can make multiple tool calls.
+
+MCP clarification:
+- MCP (Model Context Protocol) is a standard way for LLMs to call tools.
+- An **MCP server is NOT provided by AWS**.
+- We must **build the MCP server ourselves**.
+- In AWS, an MCP server is typically:
+  - API Gateway + Lambda
+- MCP servers expose backend capabilities as tools (e.g., search docs, get user data, get transactions).
+- MCP servers act as a security and permission boundary.
+- Tools are small, deterministic, and return structured JSON.
+- Reasoning stays in the LLM, execution stays in AWS.
+
+Target architecture:
+- Mobile App → AWS API Gateway
+- Agent Lambda (AWS) orchestrates the agent loop
+- Azure GPT-5-chat performs reasoning and decides tool calls
+- MCP Servers run in AWS and wrap:
+  - AWS backend APIs and databases
+  - Azure AI Search
+- Azure is used only for AI inference and search; data remains primarily in AWS.
+
+Goals:
+- Extend the existing chatbot into an AI assistant
+- Enable multi-step reasoning and actions
+- Keep the mobile app unchanged
+- Keep backend data in AWS
+- Follow agent + MCP best practices
+
+Continue from this context and help with next steps, diagrams, pseudo-code, or explanations as needed.
