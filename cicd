@@ -1,0 +1,64 @@
+# File: inside/azure-pipelines.yml
+trigger: none   # Disable automatic triggers
+
+stages:
+# =========================
+# Stage 1: CI - Build (Microsoft-hosted agent)
+# =========================
+- stage: Build
+  displayName: "Build Stage"
+  jobs:
+  - job: BuildJob
+    displayName: "Restore, Build, and Archive"
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: 'Restore Packages'
+      inputs:
+        command: restore
+        projects: |
+          **/IdocPostingService2.csproj
+          **/IdocPostingService2Library.csproj
+          **/IdocPostingService2TestUI.csproj
+          **/SympleData2.csproj
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Build Projects'
+      inputs:
+        projects: |
+          **/IdocPostingService2.csproj
+          **/IdocPostingService2Library.csproj
+          **/IdocPostingService2TestUI.csproj
+          **/SympleData2.csproj
+        arguments: '--output $(Build.ArtifactStagingDirectory)/IdocPostingService --configuration Release'
+
+    - task: ArchiveFiles@2
+      displayName: 'Archive Build Output'
+      inputs:
+        rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/IdocPostingService'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/SymPLE.IdocPostingService2-CI_$(Build.BuildNumber).zip'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: drop'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/SymPLE.IdocPostingService2-CI_$(Build.BuildNumber).zip'
+        ArtifactName: 'drop'
+
+# =========================
+# Stage 2: CD - Release (Deployment Group / Dev Env)
+# =========================
+- stage: Release
+  displayName: "Release Stage"
+  dependsOn: Build   # Run only after Build stage succeeds
+  jobs:
+  - deployment: DeployToDev
+    displayName: "Deploy to Dev Env"
+    environment: "Dev Env"
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: drop
+            displayName: "Download Artifact"
