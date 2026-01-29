@@ -1,0 +1,11 @@
+$Path = 'G:\Apps\Symple\PrinterAdmin'
+$TargetExe = "SymplePrinterAdmin"
+$MaxRetries = 5
+
+if (Test-Path $Path) {
+    # --- CHECK BEFORE ---
+    if (Get-Process -Name $TargetExe -ErrorAction SilentlyContinue | Where-Object { $_.Path -like "$Path*" }) {
+        Write-Host "STATUS: $TargetExe is running" -ForegroundColor Yellow
+    } else {
+        Write-Host "STATUS: $TargetExe is not running" -ForegroundColor Green
+    }
